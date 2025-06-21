@@ -1,14 +1,39 @@
-from fileinput import filename
+import mysql.connector
+from mysql.connector import errorcode
+import json
+import sys
 
-file = '/shome/ubuntu/alert_hub/README.md'
+UserName = "alerthub"
+Password = "alerthub"
+RemoteHost = "localhost"
+MySQLPort = int(33006   )  # precisa ser inteiro
+DatabaseName = "alerthub"
 
 try:
-    with open(file, 'r') as r:
-        print(r.read())
+    conn = mysql.connector.connect(
+        user=UserName,
+        password=Password,
+        host=RemoteHost,
+        port=MySQLPort,
+        database=DatabaseName
+    )
+    cursor = conn.cursor(dictionary=True)
+    query = ("SELECT * FROM teste")
+    cursor.execute(query)
 
-except FileNotFoundError as error :
-    print(error)
-except:
-    print("deuruim")
 
-print("OK")
+    for row in cursor:
+        print(json.dumps(row, indent=4))
+    cursor.close()
+    conn.close()
+
+except mysql.connector.Error as err:
+
+    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        print("Something is wrong with your user name or password")
+
+    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+        print("Database does not exist")
+
+    else:
+        print(err)
