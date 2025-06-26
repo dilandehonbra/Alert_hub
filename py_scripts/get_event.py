@@ -3,37 +3,39 @@ from mysql.connector import errorcode
 import json
 import sys
 
-UserName = "alerthub"
-Password = "alerthub"
+UserName = "zabbix"
+Password = "ls32bits"
 RemoteHost = "localhost"
-MySQLPort = int(33006)
-DatabaseName = "alerthub"
+MySQLPort = int(3306)
+DatabaseName = "zabbix"
 
-try:
-    conn = mysql.connector.connect(
-        user=UserName,
-        password=Password,
-        host=RemoteHost,
-        port=MySQLPort,
-        database=DatabaseName
-    )
-    cursor = conn.cursor(dictionary=True)
-    query = ("SELECT * FROM teste")
-    cursor.execute(query)
+def getEvents():
+    try:
+        conn = mysql.connector.connect(
+            user=UserName,
+            password=Password,
+            host=RemoteHost,
+            port=MySQLPort,
+            database=DatabaseName
+        )
+        cursor = conn.cursor(dictionary=True)
+        query = ("SELECT * FROM zabbix.events")
+        cursor.execute(query)
 
+        results = []
+        for row in cursor:
+            results.append(row)
+        cursor.close()
+        conn.close()
+        return json.dumps(results, indent=4)
 
-    for row in cursor:
-        print(json.dumps(row, indent=4))
-    cursor.close()
-    conn.close()
+    except mysql.connector.Error as err:
 
-except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Something is wrong with your user name or password")
 
-    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-        print("Something is wrong with your user name or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print("Database does not exist")
 
-    elif err.errno == errorcode.ER_BAD_DB_ERROR:
-        print("Database does not exist")
-
-    else:
-        print(err)
+        else:
+            print(err)

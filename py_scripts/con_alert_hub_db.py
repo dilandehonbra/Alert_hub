@@ -7,7 +7,7 @@ UserName = "alerthub"
 Password = "alerthub"
 RemoteHost = "localhost"
 MySQLPort = int(33006)
-DatabaseName = "alerthub"
+DatabaseName = "alert_hub_zabbix"
 
 try:
     conn = mysql.connector.connect(
@@ -18,7 +18,7 @@ try:
         database=DatabaseName
     )
     cursor = conn.cursor(dictionary=True)
-    query = ("SELECT * FROM teste")
+    query = ("SELECT * FROM zabbix_events")
     cursor.execute(query)
 
 

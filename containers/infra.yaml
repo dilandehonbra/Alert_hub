@@ -1,18 +1,20 @@
+version: '3.8'
+
 services:
-  mysql:
+  mysql-lab:
     image: mysql:8.0
     container_name: mysql_lab
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: alerthub
-      MYSQL_DATABASE: alerthub
+      MYSQL_DATABASE: alert_hub_zabbix
       MYSQL_USER: alerthub
       MYSQL_PASSWORD: alerthub
     ports:
       - "33006:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d
 
 volumes:
   mysql_data:
-#
